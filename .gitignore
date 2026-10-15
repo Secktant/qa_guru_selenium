@@ -1,0 +1,45 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+ENV/
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Environment variables and secrets
+.env
+secret.json
+credentials.json
+
+# Selenium specific (drivers and temporary files)
+chromedriver
+chromedriver.exe
+geckodriver
+geckodriver.exe
+msedgedriver.exe
+operadriver.exe
+
+# Logs and test reports
+*.log
+allure-results/
+allure-report/
+reports/
+screenshots/
+downloads/
+
+# OS generated files
+.DS_Store
+Thumbs.db
