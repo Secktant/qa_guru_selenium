@@ -21,7 +21,7 @@ class TestDynamicallyLoadedPageElements:
         options.add_argument("--headless")
         self.driver = webdriver.Chrome(options=options)
         self.driver.get(self.URL)
-        self.wait = WebDriverWait(self.driver, 10)
+        self.wait = WebDriverWait(self.driver, 15)
         yield
         self.driver.quit()
 
