@@ -1,3 +1,4 @@
+import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
@@ -8,101 +9,78 @@ valid_email = "test@example.com"
 invalid_email = "test.com"
 valid_current_address = "Москва"
 valid_permanent_address = "Санкт-Петербург"
+expected_name_placeholder = "Full Name"
+expected_email_placeholder = "name@example.com"
+expected_current_address_placeholder = "Current Address"
+expected_validation_message = "Адрес электронной почты должен содержать символ \"@\". В адресе \"test.com\" отсутствует символ \"@\"."
+
+FIELD_FULL_NAME = (By.ID, "userName")
+FIELD_EMAIL = (By.ID, "userEmail")
+FIELD_CURRENT_ADDRESS = (By.ID, "currentAddress")
+FIELD_PERMANENT_ADDRESS = (By.ID, "permanentAddress")
+SUBMIT_BUTTON = (By.ID, "submit")
+OUTPUT_BOX = (By.ID, "output")
+OUTPUT_BOX_FULL_NAME = (By.ID, "name")
+OUTPUT_BOX_EMAIL = (By.ID, "email")
+OUTPUT_BOX_CURRENT_ADDRESS = (By.ID, "currentAddress")
+OUTPUT_BOX_PERMANENT_ADDRESS = (By.ID, "permanentAddress")
 
 
-def test_filling_in_fields():
+@pytest.fixture
+def browser():
     driver = webdriver.Chrome()
-    try:
-        # Открываем браузер
-        driver.get(URL)
+    driver.maximize_window()
 
-        # Ищем поле с именем и заполняем его
-        field_full_name = driver.find_element(By.ID, "userName")
-        field_full_name.send_keys(valid_full_name)
+    yield driver
 
-        # Ищем поле с почтой и заполняем его
-        field_email = driver.find_element(By.ID, "userEmail")
-        field_email.send_keys(valid_email)
-
-        # Ищем поле с текущим адресом и заполняем его
-        field_current_address = driver.find_element(By.ID, "currentAddress")
-        field_current_address.send_keys(valid_current_address)
-
-        # Ищем поле с постоянным адресом и заполняем его
-        field_permanent_address = driver.find_element(By.ID, "permanentAddress")
-        field_permanent_address.send_keys(valid_permanent_address)
-
-        # Ищем кнопку Submit и нажимаем на неё
-        submit_button = driver.find_element(By.ID, "submit")
-        submit_button.click()
-
-        # Находим форму с введенными данными
-        output_box = driver.find_element(By.ID, "output")
-
-        # Находим имена полей в форме с введенными данными
-        output_box_full_name = output_box.find_element(By.ID, "name")
-        output_box_email = output_box.find_element(By.ID, "email")
-        output_box_current_address = output_box.find_element(By.ID, "currentAddress")
-        output_box_permanent_address = output_box.find_element(By.ID, "permanentAddress")
-
-        # Проверяем что все введенные данные есть в форме и в нужном поле
-        assert valid_full_name in output_box_full_name.text
-        assert valid_email in output_box_email.text
-        assert valid_current_address in output_box_current_address.text
-        assert valid_permanent_address in output_box_permanent_address.text
-    finally:
-        driver.quit()
+    driver.quit()
 
 
-def test_input_placeholder():
-    driver = webdriver.Chrome()
-    expected_name_placeholder = "Full Name"
-    expected_email_placeholder = "name@example.com"
-    expected_current_address_placeholder = "Current Address"
-    try:
-        driver.get(URL)
+def test_filling_in_fields(browser):
+    # Открываем ссылку
+    browser.get(URL)
 
-        field_full_name = driver.find_element(By.ID, "userName")
-        actual_name_placeholder = field_full_name.get_attribute("placeholder")
+    # Ищем поле с именем и заполняем его
+    browser.find_element(*FIELD_FULL_NAME).send_keys(valid_full_name)
 
-        field_email = driver.find_element(By.ID, "userEmail")
-        actual_email_placeholder = field_email.get_attribute("placeholder")
+    # Ищем поле с почтой и заполняем его
+    browser.find_element(*FIELD_EMAIL).send_keys(valid_email)
 
-        field_current_address = driver.find_element(By.ID, "currentAddress")
-        actual_current_address_placeholder = field_current_address.get_attribute("placeholder")
+    # Ищем поле с текущим адресом и заполняем его
+    browser.find_element(*FIELD_CURRENT_ADDRESS).send_keys(valid_current_address)
 
-        field_permanent_address = driver.find_element(By.ID, "permanentAddress")
-        actual_permanent_address_placeholder = field_permanent_address.get_attribute("placeholder")
+    # Ищем поле с постоянным адресом и заполняем его
+    browser.find_element(*FIELD_PERMANENT_ADDRESS).send_keys(valid_permanent_address)
 
-        assert expected_name_placeholder == actual_name_placeholder
-        assert expected_email_placeholder == actual_email_placeholder
-        assert expected_current_address_placeholder == actual_current_address_placeholder
-        assert not actual_permanent_address_placeholder
-    finally:
-        driver.quit()
+    # Ищем кнопку Submit и нажимаем на неё
+    browser.find_element(*SUBMIT_BUTTON).click()
+
+    # Находим форму с введенными данными
+    output_box = browser.find_element(*OUTPUT_BOX)
+
+    # Проверяем что все введенные данные есть в форме и в нужном поле
+    assert valid_full_name in output_box.find_element(*OUTPUT_BOX_FULL_NAME).text
+    assert valid_email in output_box.find_element(*OUTPUT_BOX_EMAIL).text
+    assert valid_current_address in output_box.find_element(*OUTPUT_BOX_CURRENT_ADDRESS).text
+    assert valid_permanent_address in output_box.find_element(*OUTPUT_BOX_PERMANENT_ADDRESS).text
 
 
-def test_invalid_email():
-    driver = webdriver.Chrome()
-    expected_validation_message = "Адрес электронной почты должен содержать символ \"@\". В адресе \"test.com\" отсутствует символ \"@\"."
-    try:
+def test_input_placeholder(browser):
+    browser.get(URL)
 
-        driver.get(URL)
+    assert expected_name_placeholder == browser.find_element(*FIELD_FULL_NAME).get_attribute("placeholder")
+    assert expected_email_placeholder == browser.find_element(*FIELD_EMAIL).get_attribute("placeholder")
+    assert expected_current_address_placeholder == browser.find_element(*FIELD_CURRENT_ADDRESS).get_attribute(
+        "placeholder")
+    assert not browser.find_element(*FIELD_PERMANENT_ADDRESS).get_attribute("placeholder")
 
-        full_name_field = driver.find_element(By.ID, "userName")
-        full_name_field.send_keys(valid_full_name)
 
-        email_field = driver.find_element(By.ID, "userEmail")
-        email_field.send_keys(invalid_email)
+def test_invalid_email(browser):
+    browser.get(URL)
+    browser.find_element(*FIELD_FULL_NAME).send_keys(valid_full_name)
+    browser.find_element(*FIELD_EMAIL).send_keys(invalid_email)
+    browser.find_element(*SUBMIT_BUTTON).click()
 
-        submit_button = driver.find_element(By.ID, "submit")
-        submit_button.click()
-
-        validation_message = driver.execute_script("return arguments[0].validationMessage", email_field)
-
-        is_valid = driver.execute_script("return arguments[0].validity.valid", email_field)
-
-        assert expected_validation_message in validation_message and is_valid is False
-
-    finally:
-        driver.quit()
+    assert expected_validation_message in browser.execute_script("return arguments[0].validationMessage",
+                                                                 browser.find_element(*FIELD_EMAIL))
+    assert browser.execute_script("return arguments[0].validity.valid", browser.find_element(*FIELD_EMAIL)) is False
