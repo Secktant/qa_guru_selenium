@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 @pytest.mark.usefixtures("setup")
@@ -44,44 +45,44 @@ class TestLoginForm:
         self.driver.quit()
 
     def test_submit_with_all_fields_empty_shows_error(self):
-        self.driver.find_element(*self.LOGIN_BUTTON).click()
-        assert self.ALL_FIELDS_REQUIRED_ERROR_TEXT == self.driver.find_element(*self.ERROR_FIELDS_EMPTY).text
+        self.wait.until(EC.element_to_be_clickable(self.LOGIN_BUTTON)).click()
+        assert self.ALL_FIELDS_REQUIRED_ERROR_TEXT == self.wait.until(EC.visibility_of_element_located(self.ERROR_FIELDS_EMPTY)).text
 
     def test_login_shorter_than_3_chars_shows_min_length_error(self):
-        self.driver.find_element(*self.LOGIN_FIELD).send_keys(self.LOGIN_LESS_THAN_3_CHARS)
-        self.driver.find_element(*self.LOGIN_BUTTON).click()
-        assert self.LOGIN_MIN_LENGTH_ERROR_TEXT == self.driver.find_element(*self.ERROR_FIELDS_EMPTY).text
+        self.wait.until(EC.element_to_be_clickable(self.LOGIN_FIELD)).send_keys(self.LOGIN_LESS_THAN_3_CHARS)
+        self.wait.until(EC.element_to_be_clickable(self.LOGIN_BUTTON)).click()
+        assert self.LOGIN_MIN_LENGTH_ERROR_TEXT == self.wait.until(EC.visibility_of_element_located(self.ERROR_FIELDS_EMPTY)).text
 
     def test_submit_with_invalid_login_and_password_shows_invalid_credentials_error(self):
-        self.driver.find_element(*self.LOGIN_FIELD).send_keys(self.NONEXISTENT_LOGIN)
-        self.driver.find_element(*self.PASSWORD_FIELD).send_keys(self.PASSWORD_EXACTLY_6_CHARS)
-        self.driver.find_element(*self.LOGIN_BUTTON).click()
-        assert self.INVALID_CREDENTIALS_ERROR_TEXT == self.driver.find_element(*self.ERROR_FIELDS_EMPTY).text
+        self.wait.until(EC.element_to_be_clickable(self.LOGIN_FIELD)).send_keys(self.NONEXISTENT_LOGIN)
+        self.wait.until(EC.element_to_be_clickable(self.PASSWORD_FIELD)).send_keys(self.PASSWORD_EXACTLY_6_CHARS)
+        self.wait.until(EC.element_to_be_clickable(self.LOGIN_BUTTON)).click()
+        assert self.INVALID_CREDENTIALS_ERROR_TEXT == self.wait.until(EC.visibility_of_element_located(self.ERROR_FIELDS_EMPTY)).text
 
     def test_submit_with_valid_login_and_short_password_shows_password_min_length_error(self):
-        self.driver.find_element(*self.LOGIN_FIELD).send_keys(self.NONEXISTENT_LOGIN)
-        self.driver.find_element(*self.PASSWORD_FIELD).send_keys(self.PASSWORD_LESS_THAN_6_CHARS)
-        self.driver.find_element(*self.LOGIN_BUTTON).click()
-        assert self.PASSWORD_MIN_LENGTH_ERROR_TEXT == self.driver.find_element(*self.ERROR_FIELDS_EMPTY).text
+        self.wait.until(EC.element_to_be_clickable(self.LOGIN_FIELD)).send_keys(self.NONEXISTENT_LOGIN)
+        self.wait.until(EC.element_to_be_clickable(self.PASSWORD_FIELD)).send_keys(self.PASSWORD_LESS_THAN_6_CHARS)
+        self.wait.until(EC.element_to_be_clickable(self.LOGIN_BUTTON)).click()
+        assert self.PASSWORD_MIN_LENGTH_ERROR_TEXT == self.wait.until(EC.visibility_of_element_located(self.ERROR_FIELDS_EMPTY)).text
 
     def test_successful_login_shows_welcome_message_with_username(self):
-        self.driver.find_element(*self.LOGIN_FIELD).send_keys(self.VALID_LOGIN)
-        self.driver.find_element(*self.PASSWORD_FIELD).send_keys(self.VALID_PASSWORD)
-        self.driver.find_element(*self.LOGIN_BUTTON).click()
-        assert self.WELCOME_MESSAGE_TEMPLATE == self.driver.find_element(*self.WELCOME_MESSAGE_FIELD).text
+        self.wait.until(EC.element_to_be_clickable(self.LOGIN_FIELD)).send_keys(self.VALID_LOGIN)
+        self.wait.until(EC.element_to_be_clickable(self.PASSWORD_FIELD)).send_keys(self.VALID_PASSWORD)
+        self.wait.until(EC.element_to_be_clickable(self.LOGIN_BUTTON)).click()
+        assert self.WELCOME_MESSAGE_TEMPLATE == self.wait.until(EC.visibility_of_element_located(self.WELCOME_MESSAGE_FIELD)).text
 
     def test_logout_button_is_displayed_after_login(self):
-        self.driver.find_element(*self.LOGIN_FIELD).send_keys(self.VALID_LOGIN)
-        self.driver.find_element(*self.PASSWORD_FIELD).send_keys(self.VALID_PASSWORD)
-        self.driver.find_element(*self.LOGIN_BUTTON).click()
-        assert self.driver.find_element(*self.LOGOUT_BUTTON).is_displayed()
+        self.wait.until(EC.element_to_be_clickable(self.LOGIN_FIELD)).send_keys(self.VALID_LOGIN)
+        self.wait.until(EC.element_to_be_clickable(self.PASSWORD_FIELD)).send_keys(self.VALID_PASSWORD)
+        self.wait.until(EC.element_to_be_clickable(self.LOGIN_BUTTON)).click()
+        assert self.wait.until(EC.element_to_be_clickable(self.LOGOUT_BUTTON)).is_displayed()
 
     def test_logout_via_logout_button_returns_to_login_form(self):
-        self.driver.find_element(*self.LOGIN_FIELD).send_keys(self.VALID_LOGIN)
-        self.driver.find_element(*self.PASSWORD_FIELD).send_keys(self.VALID_PASSWORD)
-        self.driver.find_element(*self.LOGIN_BUTTON).click()
-        self.driver.find_element(*self.LOGOUT_BUTTON).click()
-        assert self.LOGIN_FORM_TITLE_TEXT == self.driver.find_element(*self.LOGIN_FORM_TITLE).text
-        assert self.driver.find_element(*self.LOGIN_FIELD).is_displayed()
-        assert self.driver.find_element(*self.PASSWORD_FIELD).is_displayed()
-        assert self.driver.find_element(*self.LOGIN_BUTTON).is_displayed()
+        self.wait.until(EC.element_to_be_clickable(self.LOGIN_FIELD)).send_keys(self.VALID_LOGIN)
+        self.wait.until(EC.element_to_be_clickable(self.PASSWORD_FIELD)).send_keys(self.VALID_PASSWORD)
+        self.wait.until(EC.element_to_be_clickable(self.LOGIN_BUTTON)).click()
+        self.wait.until(EC.element_to_be_clickable(self.LOGOUT_BUTTON)).click()
+        assert self.LOGIN_FORM_TITLE_TEXT == self.wait.until(EC.visibility_of_element_located(self.LOGIN_FORM_TITLE)).text
+        assert self.wait.until(EC.visibility_of_element_located(self.LOGIN_FIELD)).is_displayed()
+        assert self.wait.until(EC.visibility_of_element_located(self.PASSWORD_FIELD)).is_displayed()
+        assert self.wait.until(EC.visibility_of_element_located(self.LOGIN_BUTTON)).is_displayed()
