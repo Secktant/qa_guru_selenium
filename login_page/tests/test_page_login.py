@@ -1,4 +1,4 @@
-from login_page import LoginPage
+from login_page.login_page import LoginPage
 
 
 class TestLoginForm:
